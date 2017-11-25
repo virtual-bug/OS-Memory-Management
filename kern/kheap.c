@@ -16,6 +16,7 @@ struct Size_of_Address_KHeap allocated[(KERNEL_HEAP_MAX-KERNEL_HEAP_START+1)/PAG
 
 uint32 virtualAddresses[1<<20];
 uint32 count = 0;
+
 void *firstFreeVAInKHeap  = (void*)(KERNEL_HEAP_START);
 void* kmalloc(unsigned int size)   // it's void a7pipy :D
 {
@@ -31,7 +32,7 @@ void* kmalloc(unsigned int size)   // it's void a7pipy :D
 	   size=(size+PAGE_SIZE-1)/PAGE_SIZE;
 
 
-		if(firstFreeVAInKHeap+size*PAGE_SIZE >= (void*)KERNEL_HEAP_MAX)
+		if(firstFreeVAInKHeap > (void*)KERNEL_HEAP_MAX-size*PAGE_SIZE )
 			return NULL;
 
 
@@ -86,19 +87,18 @@ void kfree(void* virtual_address)
 			break;
 		}
 	}
-	allocated[index].empty=1;
+
 
 
 	for(int i = 0; i < size; i++){
+     				virtualAddresses[(kheap_physical_address((uint32)virtual_address))/PAGE_SIZE]=0;
 
-
-
-					virtualAddresses[(kheap_physical_address((uint32)virtual_address))/PAGE_SIZE]=0;
 					unmap_frame(ptr_page_directory,virtual_address);
 					virtual_address+=PAGE_SIZE;
 	}
 
 
+	allocated[index].empty=1;
 
     tlbflush();
     return;
@@ -123,21 +123,21 @@ unsigned int kheap_virtual_address(unsigned int physical_address)
 unsigned int kheap_physical_address(unsigned int virtual_address)
 {
 
-	uint32* ptr_page;
+/*	uint32* ptr_page;
 		 int page_inex=PTX(virtual_address);
 
 		get_page_table(ptr_page_directory,(void*)virtual_address,&ptr_page);
 		uint32  entry_pt=ptr_page[page_inex];
 		uint32 pa_page=(entry_pt>>12)*4*1024;
 		return pa_page;
-		/*
+		*/
 		uint32 *pageTable;
 	 	get_page_table(ptr_page_directory,(void*)virtual_address,&pageTable);
 		uint32 phyadd= (pageTable[PTX(virtual_address)]>>12);
 		phyadd*=PAGE_SIZE;
 
 		return phyadd ;
-*/
+
 	//TODO: [PROJECT 2017 - [1] Kernel Heap] kheap_physical_address()
 	// Write your code here, remove the panic and write your code
 //	panic("kheap_physical_address() is not implemented yet...!!");
