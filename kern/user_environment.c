@@ -241,12 +241,12 @@ void * create_user_page_WS(unsigned int numOfElements)
 {
 	//TODO: [PROJECT 2017 - [2] Kernel Dynamic Allocation] create_user_page_WS()
 	// Write your code here, remove the panic and write your code
-	panic("create_user_page_WS() is not implemented yet...!!");
+	//panic("create_user_page_WS() is not implemented yet...!!");
 
 	//Use kmalloc() to allocate a new space for a working set with numOfElements elements
 
 	//change this "return" according to your answer
-	return 0;
+	return  kmalloc((numOfElements *sizeof (struct WorkingSetElement)));
 }
 
 
@@ -254,12 +254,18 @@ void * create_user_directory()
 {
 	//TODO: [PROJECT 2017 - [2] Kernel Dynamic Allocation] create_user_directory()
 	// Write your code here, remove the panic and write your code
-	panic("create_user_directory() is not implemented yet...!!");
+	//panic("create_user_directory() is not implemented yet...!!");
 
 	//Use kmalloc() to allocate a new directory
 
 	//change this "return" according to your answer
-	return 0;
+	uint32 *alloceted = kmalloc(PAGE_SIZE);
+		for(int i = 0; i < 1024; i++)
+			alloceted[i] = 0;
+
+		return alloceted;
+
+//	return 0;
 }
 
 //
